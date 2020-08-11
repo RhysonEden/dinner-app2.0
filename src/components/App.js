@@ -3,32 +3,16 @@ import React, { useState, useEffect } from "react";
 import { getSomething } from "../api";
 
 const App = () => {
-  const [message, setMessage] = useState("");
   const [recipes, setRecipes] = useState([]);
   useEffect(() => {
     getSomething()
       .then((response) => {
-        console.log(response.recipes);
-        let directions = recipes.map((recipe, index) => {
-          return recipe.directions.split("\n");
-        });
-        console.log(directions);
         setRecipes(response.recipes);
-        setMessage(directions);
       })
       .catch((error) => {
         setMessage(error.message);
       });
   }, []);
-
-  function splitDirections(recipes) {
-    let arr1 = recipes.toString();
-    let str1 = arr1.split("\n");
-    let end = str1;
-  }
-
-  // const strings = recipes.split("\n");
-  // console.log("strings", strings);
 
   return (
     <div className="App">

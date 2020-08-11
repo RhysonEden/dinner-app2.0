@@ -35,11 +35,23 @@ async function createTables() {
         );
           CREATE TABLE recipes (
           id SERIAL PRIMARY KEY,
+          "usersId" SERIAL REFERENCES users(id)
           recipename varchar NOT NULL,
-          description varchar NOT NULL,
-          ingredients varchar NOT NULL,
-          directions varchar NOT NULL
           );
+          CREATE TABLE description(
+            id SERIAL PRIMARY KEY,
+            "descriptionId" SERIAL REFERENCES recipes(id),
+            description varchar NOT NULL,
+          CREATE TABLE ingredients(
+            id SERIAL PRIMARY KEY,
+            "recipeId" SERIAL REFERENCES recipes(id),
+            ingredients varchar NOT NULL
+          )
+          CREATE TABLE directions(
+            id SERIAL PRIMARY KEY,
+            "directionsId" SERIAL REFERENCES recipes(id)
+            directions varchar NOT NULL
+          )
       `);
   } catch (error) {
     throw error;
@@ -50,8 +62,11 @@ async function dropTables() {
   try {
     ("Starting to drop tables...");
     await client.query(`
-      DROP TABLE IF EXISTS users;
+      DROP TABLE IF EXISTS description;
+      DROP TABLE IF EXISTS ingredients;
+      DROP TABLE IF EXISTS directions;
       DROP TABLE IF EXISTS recipes;
+      DROP TABLE IF EXISTS users;
       `);
 
     ("Finished dropping tables!");
@@ -120,20 +135,20 @@ async function createInitialUsers() {
   }
 }
 
-async function createIntialRecipes() {
-  try {
-    const recipes = await createRecipe({
-      recipename: "Chicken Cordon Bleu",
-      description: "Chicken Cordon Bleu in white wine sauce",
-      ingredients:
-        "6 Skinless, Boneless chicken breast\n 6 slices of swiss cheest\n6 slices of ham\n3 tablespoons all-purpose flour\n1 teaspoons paprike\n6 tablespoons of butter\n1/2 cup dry white wine\n1 teaspoons chicken bouillon granules\n1 tablespoon cornstarch\n1 cup heavy whipping cream",
-      directions:
-        "Step 1. Pound chicken breasts if they are too thick. Place a cheese and ham slice on each breast within 1/2 inch of the edges. Fold the edges of the chicken over the filling, and secure with toothpicks. Mix the flour and paprika in a small bowl, and coat the chicken pieces. \n Step 2. Heat the butter in a large skillet over medium-high heat, and cook the chicken until browned on all sides. Add the wine and bouillon. Reduce heat to low, cover, and simmer for 30 minutes, until chicken is no longer pink and juices run clear. \n Step 3. Remove the toothpicks, and transfer the breasts to a warm platter. Blend the cornstarch with the cream in a small bowl, and whisk slowly into the skillet. Cook, stirring until thickened, and pour over the chicken. Serve warm.",
-    });
-  } catch (error) {
-    throw error;
-  }
-}
+// async function createIntialRecipes() {
+//   try {
+//     const recipes = await createRecipe({
+//       recipename: "Chicken Cordon Bleu",
+//       description: "Chicken Cordon Bleu in white wine sauce",
+//       ingredients:
+//         "6 Skinless, Boneless chicken breast\n 6 slices of swiss cheest\n6 slices of ham\n3 tablespoons all-purpose flour\n1 teaspoons paprike\n6 tablespoons of butter\n1/2 cup dry white wine\n1 teaspoons chicken bouillon granules\n1 tablespoon cornstarch\n1 cup heavy whipping cream",
+//       directions:
+//         "Step 1. Pound chicken breasts if they are too thick. Place a cheese and ham slice on each breast within 1/2 inch of the edges. Fold the edges of the chicken over the filling, and secure with toothpicks. Mix the flour and paprika in a small bowl, and coat the chicken pieces. \n Step 2. Heat the butter in a large skillet over medium-high heat, and cook the chicken until browned on all sides. Add the wine and bouillon. Reduce heat to low, cover, and simmer for 30 minutes, until chicken is no longer pink and juices run clear. \n Step 3. Remove the toothpicks, and transfer the breasts to a warm platter. Blend the cornstarch with the cream in a small bowl, and whisk slowly into the skillet. Cook, stirring until thickened, and pour over the chicken. Serve warm.",
+//     });
+//   } catch (error) {
+//     throw error;
+//   }
+// }
 
 async function rebuildDB() {
   try {
@@ -155,8 +170,8 @@ async function testDB() {
     await dropTables();
     await createTables();
     await createInitialUsers();
-    await createIntialRecipes();
-    const recipe = await getAllRecipes();
+    // await createIntialRecipes();
+    // const recipe = await getAllRecipes();
     // const comp100 = await getCompaniesById(100);
     // const comp200 = await getCompaniesById(200);
     const userArman = await getUserByUsername("arman");
@@ -165,7 +180,7 @@ async function testDB() {
     const users = await getAllUsers();
     console.log("username", userArman, userJames, userRobin);
     console.log("all users", users);
-    console.log("recipe", recipe);
+    // console.log("recipe", recipe);
   } catch (error) {
     console.error(error);
   } finally {
